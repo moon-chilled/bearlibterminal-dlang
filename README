@@ -1,0 +1,1 @@
+This is a very simple wrapper for BearLibTerminal (http://foo.wyrd.name/en:bearlibterminal) written in D.  Binaries for the libraries are in lib/, for your convenience.  An example program is available in example.d.

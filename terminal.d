@@ -219,7 +219,7 @@ struct terminal { static {
 	color_t pick_bkcolor(int x, int y) { return terminal_pick_bkcolor(x, y); };
 	void put_ext(int x, int y, int dx, int dy, int code, color_t *corners) { terminal_put_ext(x, y, dx, dy, code, corners); };
 	void print(int x, int y, string s) { terminal_print8(x, y, toStringz(s)); };
-	void gprintf(T...)(int x, int y, string s, T args) { terminal_print8(x, y, format(s, args)); };
+	void printf(T...)(int x, int y, string s, T args) { terminal_print8(x, y, format(s, args)); };
 	void measure(string s) { terminal_measure8(toStringz(s)); };
 	void measuref(T...)(string s, T args) { terminal_measure8(format(s, args)); };
 	int state(int slot) { return terminal_state(slot); };
@@ -227,7 +227,7 @@ struct terminal { static {
 	int has_input() { return terminal_has_input(); };
 	int read() { return terminal_read(); };
 	int peek() { return terminal_peek(); };
-	color_t read_str(int x, int y, ref string buffer, /*char *buffer,*/ int max) {
+	color_t read_str(int x, int y, ref string buffer, int max) {
 		import std.conv: to;
 		char *buf = &(buffer ~ '\0').dup[0];
 		@trusted char[] asdf() {

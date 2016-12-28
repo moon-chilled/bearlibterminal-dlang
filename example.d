@@ -1,4 +1,6 @@
+// Written in the D programming language.
 import BearLibTerminal;
+@safe:
 
 void main() {
 	terminal.open();

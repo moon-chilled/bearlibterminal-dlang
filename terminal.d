@@ -1,9 +1,10 @@
+// Written in the D programming language.
 module BearLibTerminal;
+@safe:
+private import std.string: toStringz;
 
-import std.conv;
-
-alias color_t = uint;
-alias colour_t = uint;
+private alias color_t = uint;
+private alias colour_t = uint;
 
 
 private const(char*) format(T...)(string s, T args) {
@@ -11,11 +12,10 @@ private const(char*) format(T...)(string s, T args) {
 	import std.format: formattedWrite;
 	auto w = appender!string();
 	formattedWrite(w, s, args);
-	return cast(const char*)w.data;
+	return toStringz(w.data);
 }
 
-@safe private extern (C) {
-	import keycodes;
+private extern (C) {
 	int terminal_open();
 	void terminal_close();
 	int terminal_set8(const char*);
@@ -46,8 +46,7 @@ private const(char*) format(T...)(string s, T args) {
 }
 
 // namespace called "terminal"
-//struct terminal { static {
-extern (C++, terminal) {
+struct terminal { static {
 
 
 	// Has to be inline, for now
@@ -204,7 +203,7 @@ extern (C++, terminal) {
 
 	int open() { return terminal_open(); };
 	void close() { terminal_close(); };
-	int set(string s) { return terminal_set8(cast(const char*)s); };
+	int set(string s) { return terminal_set8(toStringz(s)); };
 	int setf(T...)(string s, T args) { return terminal_set8(format(s, args)); }
 	void color(color_t clr) { terminal_color(clr); };
 	void bkcolor(color_t clr) { terminal_bkcolor(clr); };
@@ -219,16 +218,26 @@ extern (C++, terminal) {
 	color_t pick_color(int x, int y, int index) { return terminal_pick_color(x, y, index); };
 	color_t pick_bkcolor(int x, int y) { return terminal_pick_bkcolor(x, y); };
 	void put_ext(int x, int y, int dx, int dy, int code, color_t *corners) { terminal_put_ext(x, y, dx, dy, code, corners); };
-	void print(int x, int y, string s) { terminal_print8(x, y, cast(const char*)s); };
-	void printf(T...)(int x, int y, string s, T args) { terminal_print8(x, y, format(s, args)); };
-	void measure(string s) { terminal_measure8(cast(const char*)s); };
+	void print(int x, int y, string s) { terminal_print8(x, y, toStringz(s)); };
+	void gprintf(T...)(int x, int y, string s, T args) { terminal_print8(x, y, format(s, args)); };
+	void measure(string s) { terminal_measure8(toStringz(s)); };
 	void measuref(T...)(string s, T args) { terminal_measure8(format(s, args)); };
 	int state(int slot) { return terminal_state(slot); };
 	bool check(int slot) { return terminal_state(slot) > 0; };
 	int has_input() { return terminal_has_input(); };
 	int read() { return terminal_read(); };
 	int peek() { return terminal_peek(); };
-	color_t read_str(int x, int y, ref string buffer, /*char *buffer,*/ int max) { char *buf = cast(char*) buffer; color_t tmp = terminal_read_str8(x, y, buf, max); buffer = to!string(buf); return tmp; };
+	color_t read_str(int x, int y, ref string buffer, /*char *buffer,*/ int max) {
+		import std.conv: to;
+		char *buf = &(buffer ~ '\0').dup[0];
+		@trusted string asdf() {
+			import core.stdc.string: strlen;
+			return to!string(buf[0..strlen(buf)]);
+		}
+		color_t tmp = terminal_read_str8(x, y, buf, max);
+		buffer = asdf();
+		return tmp;
+	};
 	void delay(int period) { terminal_delay(period); };
-	color_t color_from_name(string name) { return color_from_name8(cast(const char*)name); };
-}
+	color_t color_from_name(string name) { return color_from_name8(toStringz(name)); };
+}}

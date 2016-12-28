@@ -230,12 +230,12 @@ struct terminal { static {
 	color_t read_str(int x, int y, ref string buffer, /*char *buffer,*/ int max) {
 		import std.conv: to;
 		char *buf = &(buffer ~ '\0').dup[0];
-		@trusted string asdf() {
+		@trusted char[] asdf() {
 			import core.stdc.string: strlen;
-			return to!string(buf[0..strlen(buf)]);
+			return buf[0..strlen(buf)];
 		}
 		color_t tmp = terminal_read_str8(x, y, buf, max);
-		buffer = asdf();
+		buffer = to!string(asdf());
 		return tmp;
 	};
 	void delay(int period) { terminal_delay(period); };

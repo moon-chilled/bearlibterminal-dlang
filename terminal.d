@@ -1,6 +1,6 @@
 // Written in the D programming language.
 module BearLibTerminal;
-@safe:
+
 private import std.string: toStringz;
 
 private alias color_t = uint;
@@ -201,7 +201,7 @@ struct terminal { static {
 		on = 1
 	}
 
-	int open() { return terminal_open(); };
+	int open(string title="BearLibTerminal") { int c = terminal_open(); setf("window.title=%s", title); return c; };
 	void close() { terminal_close(); };
 	int set(string s) { return terminal_set8(toStringz(s)); };
 	int setf(T...)(string s, T args) { return terminal_set8(format(s, args)); }
@@ -227,15 +227,21 @@ struct terminal { static {
 	int has_input() { return terminal_has_input(); };
 	int read() { return terminal_read(); };
 	int peek() { return terminal_peek(); };
-	color_t read_str(int x, int y, ref string buffer, int max) {
+	string read_str(int x, int y, int max, string prompt="") {
+		assert (prompt.length <= max);
 		import std.conv: to;
-		char *buf = &(buffer ~ '\0').dup[0];
-		@trusted char[] asdf() {
-			import core.stdc.string: strlen;
-			return buf[0..strlen(buf)];
-		}
-		color_t tmp = terminal_read_str8(x, y, buf, max);
-		buffer = to!string(asdf());
+		import core.stdc.stdlib: malloc, free;
+
+		print(x, y, prompt);
+
+		char[] buf = new char[](max);
+		buf[] = 0;
+
+		string tmp;
+
+		terminal_read_str8(x+cast(int)prompt.length, y, buf.ptr, max);
+		tmp = to!string(buf);
+		delete buf;
 		return tmp;
 	};
 	void delay(int period) { terminal_delay(period); };

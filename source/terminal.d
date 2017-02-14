@@ -2,6 +2,7 @@
 module BearLibTerminal;
 
 private import std.string: toStringz;
+private import std.array: join;
 
 private alias color_t = uint;
 private alias colour_t = uint;
@@ -203,7 +204,7 @@ struct terminal { static {
 
 	int open(string title="BearLibTerminal") { int c = terminal_open(); setf("window.title=%s", title); return c; };
 	void close() { terminal_close(); };
-	int set(string s) { return terminal_set8(toStringz(s)); };
+	int set(string[] s...) { return terminal_set8(toStringz(join(s))); };
 	int setf(T...)(string s, T args) { return terminal_set8(format(s, args)); }
 	void color(color_t clr) { terminal_color(clr); };
 	void bkcolor(color_t clr) { terminal_bkcolor(clr); };
@@ -218,9 +219,9 @@ struct terminal { static {
 	color_t pick_color(int x, int y, int index) { return terminal_pick_color(x, y, index); };
 	color_t pick_bkcolor(int x, int y) { return terminal_pick_bkcolor(x, y); };
 	void put_ext(int x, int y, int dx, int dy, int code, color_t *corners) { terminal_put_ext(x, y, dx, dy, code, corners); };
-	void print(int x, int y, string s) { terminal_print8(x, y, toStringz(s)); };
+	void print(int x, int y, string[] s...) { terminal_print8(x, y, toStringz(join(s))); };
 	void printf(T...)(int x, int y, string s, T args) { terminal_print8(x, y, format(s, args)); };
-	void measure(string s) { terminal_measure8(toStringz(s)); };
+	void measure(string[] s...) { terminal_measure8(toStringz(join(s))); };
 	void measuref(T...)(string s, T args) { terminal_measure8(format(s, args)); };
 	int state(int slot) { return terminal_state(slot); };
 	bool check(int slot) { return terminal_state(slot) > 0; };

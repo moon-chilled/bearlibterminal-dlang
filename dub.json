@@ -9,9 +9,8 @@
 	"importPaths": ["source/"],
 	"targetType": "sourceLibrary",
 	"libs": ["BearLibTerminal"],
-	"copyFiles-windows-x86_32": ["lib/BearLibTerminal-32bit.dll"],
-	"copyFiles-windows-x86_64": ["lib/BearLibTerminal.dll"],
-	"copyFiles-linux-x86_32": ["lib/libBearLibTerminal-32bit.so"],
-	"copyFiles-linux-x86_64": ["lib/libBearLibTerminal.so"],
+	"lflags": ["-L."],
+	"copyFiles-windows": ["lib/BearLibTerminal.dll"],
+	"copyFiles-linux": ["lib/libBearLibTerminal.so"],
 	"copyFile-osx": ["lib/libBearLibTerminal.dylib"]
 }

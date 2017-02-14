@@ -1,0 +1,14 @@
+{
+	"name": "bearlibterminal-dlang",
+	"authors": [
+		"Elronnd"
+	],
+	"description": "D bindings to the wonderful BearLibTerminal.",
+	"copyright": "Copyright © 2017, Elronnd",
+	"license": "proprietary",
+	"importPaths": ["source/"],
+	"targetType": "library",
+	"dflags-dmd": ["-L-Llib", "-L-lBearLibTerminal"],
+	"dflags-ldc": ["-L-Llib", "-L-lBearLibTerminal"],
+	"dfalgs-gdc": ["-Llib", "-lBearLibTerminal"]
+}

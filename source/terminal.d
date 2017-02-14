@@ -247,6 +247,6 @@ pragma(inline, true) { struct terminal { static {
 	};
 	void delay(int period) { terminal_delay(period); };
 	color_t color_from_name(string name) { return color_from_name8(toStringz(name)); };
-	color_t color_from_argb(ubyte a, ubyte r, ubyte g, ubyte b) { return (a << 24) | (r << 16) | (g << 8) | b; }
-	color_t color_from_rgb(ubyte r, ubyte g, ubyte b) { return (r << 16) | (g << 8) | b; }
+	pure color_t color_from_argb(ubyte a, ubyte r, ubyte g, ubyte b) { return (a << 24) | (r << 16) | (g << 8) | b; }
+	pure color_t color_from_rgb(ubyte r, ubyte g, ubyte b) { return (r << 16) | (g << 8) | b; }
 }}}

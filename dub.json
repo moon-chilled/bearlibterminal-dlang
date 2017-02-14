@@ -7,8 +7,11 @@
 	"copyright": "Copyright © 2017, Elronnd",
 	"license": "proprietary",
 	"importPaths": ["source/"],
-	"targetType": "library",
-	"dflags-dmd": ["-L-Llib", "-L-lBearLibTerminal"],
-	"dflags-ldc": ["-L-Llib", "-L-lBearLibTerminal"],
-	"dfalgs-gdc": ["-Llib", "-lBearLibTerminal"]
+	"targetType": "sourceLibrary",
+	"libs": ["BearLibTerminal"],
+	"copyFiles-windows-x86_32": ["lib/BearLibTerminal-32bit.dll"],
+	"copyFiles-windows-x86_64": ["lib/BearLibTerminal.dll"],
+	"copyFiles-linux-x86_32": ["lib/libBearLibTerminal-32bit.so"],
+	"copyFiles-linux-x86_64": ["lib/libBearLibTerminal.so"],
+	"copyFile-osx": ["lib/libBearLibTerminal.dylib"]
 }

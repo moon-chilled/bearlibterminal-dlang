@@ -10,7 +10,7 @@
 	"targetType": "sourceLibrary",
 	"libs": ["BearLibTerminal"],
 	"lflags": ["-L."],
-	"copyFiles-windows": ["lib/BearLibTerminal.dll"],
+	"copyFiles-windows": ["lib/BearLibTerminal.lib"],
 	"copyFiles-linux": ["lib/libBearLibTerminal.so"],
 	"copyFile-osx": ["lib/libBearLibTerminal.dylib"]
 }

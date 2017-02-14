@@ -165,9 +165,9 @@ pragma(inline, true) { struct terminal { static {
 		mouse_clicks = 0x8C /* Number of consecutive clicks */,
 
 		/*
-		* If key was released instead of pressed, it's code will be OR'ed with TK_KEY_RELEASED:
+		* If key was released instead of pressed, it's code will be OR'ed with key_released:
 		* a) pressed 'A': 0x04
-		* b) released 'A': 0x04|VK_KEY_RELEASED = 0x104
+		* b) released 'A': 0x04|terminal.keycodes.key_released = 0x104
 		*/
 		key_released = 0x100,
 

@@ -8,15 +8,16 @@ private alias color_t = uint;
 private alias colour_t = uint;
 
 
-private const(char*) format(T...)(string s, T args) {
+private string format(T...)(string s, T args) {
 	import std.array: appender;
 	import std.format: formattedWrite;
 	auto w = appender!string();
 	formattedWrite(w, s, args);
-	return toStringz(w.data);
+	return w.data;
 }
 
 private extern (C) {
+	public struct dimensions_t { int width, height; }
 	int terminal_open();
 	void terminal_close();
 	int terminal_set8(const char*);
@@ -33,8 +34,8 @@ private extern (C) {
 	color_t terminal_pick_color(int, int, int);
 	color_t terminal_pick_bkcolor(int, int);
 	void terminal_put_ext(int, int, int, int, int, color_t*);
-	void terminal_print8(int, int, const char*);
-	void terminal_measure8(const char*);
+	void terminal_print_ext8(int, int, int, int, int, const char*, int*, int*);
+	void terminal_measure_ext8(int, int, const char*, int*, int*);
 	int terminal_state(int);
 	int terminal_check(int);
 	int terminal_has_input();
@@ -148,8 +149,8 @@ pragma(inline, true) { struct terminal { static {
 		alt = 0x72,
 
 		/*
-		* Mouse events/states
-		*/
+		 * Mouse events/states
+		 */
 		mouse_left = 0x80 /* Buttons */,
 		mouse_right = 0x81,
 		mouse_middle = 0x82,
@@ -165,16 +166,16 @@ pragma(inline, true) { struct terminal { static {
 		mouse_clicks = 0x8C /* Number of consecutive clicks */,
 
 		/*
-		* If key was released instead of pressed, it's code will be OR'ed with key_released:
-		* a) pressed 'A': 0x04
-		* b) released 'A': 0x04|terminal.keycodes.key_released = 0x104
-		*/
+		 * If key was released instead of pressed, it's code will be OR'ed with key_released:
+		 * a) pressed 'A': 0x04
+		 * b) released 'A': 0x04|terminal.keycodes.key_released = 0x104
+		 */
 		key_released = 0x100,
 
 		/*
-		* Virtual key-codes for internal terminal states/variables.
-		* These can be accessed via terminal_state function.
-		*/
+		 * Virtual key-codes for internal terminal states/variables.
+		 * These can be accessed via terminal_state function.
+		 */
 		width = 0xC0 /* Terminal window size in cells */,
 		height = 0xC1,
 		cell_width = 0xC2 /* Character cell size in pixels */,
@@ -189,23 +190,37 @@ pragma(inline, true) { struct terminal { static {
 		fullscreen = 0xCB /* Fullscreen state */,
 
 		/*
-		* Other events
-		*/
+		 * Other events
+		 */
 		close = 0xe0,
 		resized = 0xe1,
 
 		/*
-		* Generic mode enum.
-		* Right now it is used for composition option only.
-		*/
+		 * Generic mode enum.
+		 * Right now it is used for composition option only.
+		 */
 		off = 0,
-		on = 1
+		on = 1,
+
+		// Input result codes for the terminal_read function.
+		input_none = 0,
+		input_cancelled = -1,
+
+		// Text printing alignment
+		align_default = 0,
+		align_left = 1,
+		align_right = 2,
+		align_center = 3,
+		align_centre = 3,
+		align_top = 4,
+		align_bottom = 8,
+		align_middle = 12
 	}
 
 	int open(string title="BearLibTerminal") { int c = terminal_open(); setf("window.title=%s", title); return c; };
 	void close() { terminal_close(); };
 	int set(string[] s...) { return terminal_set8(toStringz(join(s))); };
-	int setf(T...)(string s, T args) { return terminal_set8(format(s, args)); }
+	int setf(T...)(string s, T args) { return terminal_set8(toStringz(format(s, args))); }
 	void color(color_t clr) { terminal_color(clr); };
 	void bkcolor(color_t clr) { terminal_bkcolor(clr); };
 	void composition(int mode) { terminal_composition(mode); };
@@ -218,11 +233,29 @@ pragma(inline, true) { struct terminal { static {
 	int pick(int x, int y, int index) { return terminal_pick(x, y, index); };
 	color_t pick_color(int x, int y, int index) { return terminal_pick_color(x, y, index); };
 	color_t pick_bkcolor(int x, int y) { return terminal_pick_bkcolor(x, y); };
-	void put_ext(int x, int y, int dx, int dy, int code, color_t *corners) { terminal_put_ext(x, y, dx, dy, code, corners); };
-	void print(int x, int y, string[] s...) { terminal_print8(x, y, toStringz(join(s))); };
-	void printf(T...)(int x, int y, string s, T args) { terminal_print8(x, y, format(s, args)); };
-	void measure(string[] s...) { terminal_measure8(toStringz(join(s))); };
-	void measuref(T...)(string s, T args) { terminal_measure8(format(s, args)); };
+	void put_ext(int x, int y, int dx, int dy, int code) { terminal_put_ext(x, y, dx, dy, code, null); };
+	void put_ext(int x, int y, int dx, int dy, int code, color_t[4] corners) { terminal_put_ext(x, y, dx, dy, code, corners.ptr); };
+
+	dimensions_t print_ext(int x, int y, int w, int h, int alignment, string[] s...) {
+		dimensions_t tmp;
+		terminal_print_ext8(x, y, w, h, alignment, toStringz(join(s)), &tmp.width, &tmp.height);
+		return tmp;
+	}
+	dimensions_t printf_ext(T...)(int x, int y, int w, int h, int alignment, string s, T args) { return print_ext(x, y, w, h, alignment, format(s, args)); }
+	dimensions_t print(int x, int y, string[] s...) {
+		return print_ext(x, y, 0, 0, 0, join(s));
+	};
+	dimensions_t printf(T...)(int x, int y, string s, T args) { return print(x, y, format(s, args)); };
+
+	dimensions_t measure_ext(int w, int h, string[] s...) {
+		dimensions_t tmp;
+		terminal_measure_ext8(w, h, toStringz(join(s)), &tmp.width, &tmp.height);
+		return tmp;
+	}
+	dimensions_t measuref_ext(T...)(int w, in h, string s, T args) { return measure_ext(w, h, format(s, args)); }
+	dimensions_t measure(string[] s...) { return measure_ext(0, 0, s); };
+	dimensions_t measuref(T...)(string s, T args) { return measure(format(s, args)); };
+	
 	int state(int slot) { return terminal_state(slot); };
 	bool check(int slot) { return terminal_state(slot) > 0; };
 	int has_input() { return terminal_has_input(); };

@@ -11,8 +11,8 @@
 	"libs": ["BearLibTerminal"],
 	"lflags-linux": ["-L."],
 	"lflags-osx": ["-L."],
-	"environment": [ {"LIB": "."} ],
-	"copyFiles-windows": ["lib/BearLibTerminal.lib"],
+	"dflags-windows": ["-m32mscoff"],
+	"copyFiles-windows": ["lib/BearLibTerminal.lib", "lib/BearLibTerminal.dll"],
 	"copyFiles-linux": ["lib/libBearLibTerminal.so"],
 	"copyFile-osx": ["lib/libBearLibTerminal.dylib"]
 }

@@ -21,6 +21,7 @@ private extern (C) {
 	int terminal_open();
 	void terminal_close();
 	int terminal_set8(const char*);
+	char *terminal_get8(const char*, const char*);
 	void terminal_color(color_t);
 	void terminal_bkcolor(color_t);
 	void terminal_composition(int);
@@ -220,6 +221,7 @@ pragma(inline, true) { struct terminal { static {
 	int open(string title="BearLibTerminal") { int c = terminal_open(); setf("window.title=%s", title); return c; };
 	void close() { terminal_close(); };
 	int set(string[] s...) { return terminal_set8(toStringz(join(s))); };
+	string get(string key, string defaultval) { import std.conv: to; return to!string(terminal_get8(toStringz(key), toStringz(defaultval))); }
 	int setf(T...)(string s, T args) { return terminal_set8(toStringz(format(s, args))); }
 	void color(color_t clr) { terminal_color(clr); };
 	void bkcolor(color_t clr) { terminal_bkcolor(clr); };

@@ -4,9 +4,7 @@ module BearLibTerminal;
 private import std.string: toStringz;
 private import std.array: join;
 
-private alias color_t = uint;
-private alias colour_t = uint;
-
+public alias color_t = uint;
 
 private string format(T...)(string s, T args) {
 	import std.array: appender;
@@ -182,7 +180,9 @@ pragma(inline, true) { struct terminal { static {
 		cell_width = 0xC2 /* Character cell size in pixels */,
 		cell_height = 0xC3,
 		color = 0xC4 /* Current foregroung color */,
+		colour = 0xC4,
 		bkcolor = 0xC5 /* Current background color */,
+		bkcolour = 0xC5,
 		layer = 0xC6 /* Current layer */,
 		composition = 0xC7 /* Current composition state */,
 		character = 0xC8 /* Translated ANSI code of last produced character */,
@@ -223,8 +223,15 @@ pragma(inline, true) { struct terminal { static {
 	int set(string[] s...) { return terminal_set8(toStringz(join(s))); };
 	string get(string key, string defaultval) { import std.conv: to; return to!string(terminal_get8(toStringz(key), toStringz(defaultval))); }
 	int setf(T...)(string s, T args) { return terminal_set8(toStringz(format(s, args))); }
+
 	void color(color_t clr) { terminal_color(clr); };
+	void color(string clr) { terminal_color(color_from_name(clr)); }
+	alias colour = color;
+
 	void bkcolor(color_t clr) { terminal_bkcolor(clr); };
+	void bkcolor(string clr) { terminal_bkcolor(color_from_name(clr)); };
+	alias bkcolour = bkcolor;
+
 	void composition(int mode) { terminal_composition(mode); };
 	void layer(int lyr) { terminal_layer(lyr); };
 	void clear() { terminal_clear(); };
@@ -235,6 +242,9 @@ pragma(inline, true) { struct terminal { static {
 	int pick(int x, int y, int index) { return terminal_pick(x, y, index); };
 	color_t pick_color(int x, int y, int index) { return terminal_pick_color(x, y, index); };
 	color_t pick_bkcolor(int x, int y) { return terminal_pick_bkcolor(x, y); };
+	alias pick_colour = pick_color;
+	alias pick_bkcolour = pick_bkcolor;
+
 	void put_ext(int x, int y, int dx, int dy, int code) { terminal_put_ext(x, y, dx, dy, code, null); };
 	void put_ext(int x, int y, int dx, int dy, int code, color_t[4] corners) { terminal_put_ext(x, y, dx, dy, code, corners.ptr); };
 
@@ -261,7 +271,7 @@ pragma(inline, true) { struct terminal { static {
 	int state(int slot) { return terminal_state(slot); };
 	bool check(int slot) { return terminal_state(slot) > 0; };
 	int has_input() { return terminal_has_input(); };
-	int read() { return terminal_read(); };
+	keycode read() { return cast(keycode)terminal_read(); };
 	int peek() { return terminal_peek(); };
 	string read_str(int x, int y, int max, string prompt="") {
 		assert (prompt.length <= max);
@@ -281,7 +291,12 @@ pragma(inline, true) { struct terminal { static {
 		return tmp;
 	};
 	void delay(int period) { terminal_delay(period); };
-	color_t color_from_name(string name) { return color_from_name8(toStringz(name)); };
-	pure color_t color_from_argb(ubyte a, ubyte r, ubyte g, ubyte b) { return (a << 24) | (r << 16) | (g << 8) | b; }
-	pure color_t color_from_rgb(ubyte r, ubyte g, ubyte b) { return (r << 16) | (g << 8) | b; }
+	uint color_from_name(string name) { return color_from_name8(toStringz(name)); };
+	alias colour_from_name = color_from_name;
+
+	pure uint color_from_argb(ubyte a, ubyte r, ubyte g, ubyte b) { return (a << 24) | (r << 16) | (g << 8) | b; }
+	pure uint color_from_rgb(ubyte r, ubyte g, ubyte b) { return (255 << 24) | (r << 16) | (g << 8) | b; }
+	alias colour_from_argb = color_from_argb;
+	alias colour_from_rgb = color_from_rgb;
+
 }}}

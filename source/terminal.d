@@ -1,18 +1,10 @@
 // Written in the D programming language.
 module BearLibTerminal;
 
-private import std.string: toStringz;
+private import std.string: toStringz, format;
 private import std.array: join;
 
 public alias color_t = uint;
-
-private string format(T...)(string s, T args) {
-	import std.array: appender;
-	import std.format: formattedWrite;
-	auto w = appender!string();
-	formattedWrite(w, s, args);
-	return w.data;
-}
 
 private extern (C) {
 	public struct dimensions_t { int width, height; }

@@ -138,6 +138,7 @@ pragma(inline, true) { struct terminal { static {
 		kp_period = 0x63 /* '.' on numpad */,
 		shift = 0x70,
 		control = 0x71,
+		ctrl = 0x71, // the same
 		alt = 0x72,
 
 		/*
@@ -210,6 +211,7 @@ pragma(inline, true) { struct terminal { static {
 		align_bottom = 8,
 		align_middle = 12
 	}
+	alias keycodes = keycode;
 
 	int open(string title="BearLibTerminal") { int c = terminal_open(); setf("window.title=%s", title); return c; };
 	void close() { terminal_close(); };

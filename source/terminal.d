@@ -15,6 +15,7 @@ private extern (C) {
 	void terminal_color(color_t);
 	void terminal_bkcolor(color_t);
 	void terminal_composition(int);
+	void terminal_font8(const char*);
 	void terminal_layer(int);
 	void terminal_clear();
 	void terminal_clear_area(int, int, int, int);
@@ -225,6 +226,8 @@ pragma(inline, true) { struct terminal { static {
 	alias bkcolour = bkcolor;
 
 	void composition(int mode) { terminal_composition(mode); };
+
+	void font(string name) { terminal_font8(toStringz(name)); }
 	void layer(int lyr) { terminal_layer(lyr); };
 	void clear() { terminal_clear(); };
 	void clear_area(int x, int y, int w, int h) { terminal_clear_area(x, y, w, h); };

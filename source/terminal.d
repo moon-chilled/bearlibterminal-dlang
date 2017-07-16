@@ -264,7 +264,7 @@ pragma(inline, true) { struct terminal { static {
 	dimensions_t measuref_ext(T...)(int w, in h, string s, T args) { return measure_ext(w, h, format(s, args)); }
 	dimensions_t measure(string[] s...) { return measure_ext(0, 0, s); };
 	dimensions_t measuref(T...)(string s, T args) { return measure(format(s, args)); };
-	
+
 	int state(int slot) { return terminal_state(slot); };
 	bool check(int slot) { return terminal_state(slot) > 0; };
 	int has_input() { return terminal_has_input(); };

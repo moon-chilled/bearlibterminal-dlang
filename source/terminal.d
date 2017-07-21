@@ -40,7 +40,12 @@ private extern (C) {
 }
 
 // namespace called "terminal"
-pragma(inline, true) { struct terminal { static {
+struct terminal { static {
+
+// dmd doesn't know how to fucking optimize
+version (DigitalMars) {} else {
+	pragma(inline, true):
+}
 
 
 	// Has to be inline, for now

@@ -301,4 +301,4 @@ version (DigitalMars) {} else {
 	alias colour_from_argb = color_from_argb;
 	alias colour_from_rgb = color_from_rgb;
 
-}}}
+}}

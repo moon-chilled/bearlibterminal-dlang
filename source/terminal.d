@@ -140,7 +140,7 @@ version (DigitalMars) {} else {
 		KP_8 = 0x60,
 		KP_9 = 0x61,
 		KP_0 = 0x62,
-		kp_period = 0x63 /* '.' on numpad */,
+		KP_period = 0x63 /* '.' on numpad */,
 		shift = 0x70,
 		control = 0x71,
 		ctrl = 0x71, // the same

@@ -218,7 +218,7 @@ version (DigitalMars) {} else {
 	}
 	alias keycodes = keycode;
 
-	int open(string title="BearLibTerminal") { int c = terminal_open(); setf("window.title=%s", title); return c; };
+	int open(string title="BearLibTerminal") { int c = terminal_open(); set("window.title=" ~ title); return c; };
 	void close() { terminal_close(); };
 	int set(string[] s...) { return terminal_set8(toStringz(join(s))); };
 	string get(string key, string defaultval) { import std.conv: to; return to!string(terminal_get8(toStringz(key), toStringz(defaultval))); }
@@ -278,18 +278,17 @@ version (DigitalMars) {} else {
 	string read_str(int x, int y, int max, string prompt="") {
 		assert (prompt.length <= max);
 		import std.conv: to;
-		import core.stdc.stdlib: malloc, free;
 
 		print(x, y, prompt);
 
-		char[] buf = new char[](max);
+		char[] buf = new char[max];
 		buf[] = 0;
 
 		string tmp;
 
 		terminal_read_str8(x+cast(int)prompt.length, y, buf.ptr, max);
 		tmp = to!string(buf);
-		delete buf;
+
 		return tmp;
 	};
 	void delay(int period) { terminal_delay(period); };

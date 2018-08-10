@@ -4,7 +4,7 @@
 		"Elronnd"
 	],
 	"description": "D bindings to the wonderful BearLibTerminal.",
-	"copyright": "Copyright © 2017, Elronnd",
+	"copyright": "Copyright © 2017-2018, Elronnd",
 	"license": "MIT",
 	"importPaths": ["source/"],
 	"targetType": "sourceLibrary",
